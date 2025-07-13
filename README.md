@@ -75,7 +75,7 @@ EVUA/
     ```
 4. Start the FastAPI server (assuming main application file is `app/main.py`):
     ```sh
-    uvicorn app.main:app --reload
+    fastapi dev main.py
     ```
 5. The API will be available at `http://localhost:8000` by default.
 
@@ -87,8 +87,3 @@ EVUA/
 2. Make your changes and commit them with clear messages.
 3. Open a Pull Request describing your changes.
 
----
-
-## Questions?
-
-If you have any questions or need clarification, please open an issue or reach out to the maintainers.
