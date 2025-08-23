@@ -1,88 +1,117 @@
+#setup venv and install dependencies
+#Also install node modules
+#use: Go to backend folder and run
+#python core/parser.py upgrade --src source folder location --dst destination folder location
+#Ex: python core/parser.py upgrade --src projects/source --dst projects/destination
+
 import os
-import subprocess
 import shutil
-import sys
-import tempfile
+import subprocess
+from pathlib import Path
+import argparse
+from pyParser import upgrade_file as upgrade_python
 
-# Avoid permission issues with modernize cache
-os.environ["XDG_CACHE_HOME"] = os.path.expanduser("~/.cache")
+# --- JS upgrader wrapper ---
+def upgrade_js(src, dst):
+    try:
+        subprocess.run(
+            ["node", os.path.join(os.path.dirname(__file__), "jsParser.mjs"), src, dst],
+            check=True,
+            capture_output=True,
+            text=True
+        )
+        print(f"Upgraded JS: {src} → {dst}")
+    except subprocess.CalledProcessError as e:
+        print(f"Error upgrading JS {src}: {e.stderr}")
+        # fallback: just copy file
+        shutil.copy2(src, dst)
+        print(f"Copied (fallback): {src}")
 
-# Upgrade a single Python file using the `modernize` tool
-def upgrade_single_file(file_path):
-    # Read original source code
-    with open(file_path, "r", encoding="utf-8") as f:
-        original_code = f.read()
+# Map file extensions to language-specific upgrade functions
+LANG_UPGRADERS = {
+    ".py": upgrade_python,
+    ".js": upgrade_js,
+    # future: ".java": upgrade_java,
+}
 
-    # Create a temporary file to apply in-place conversion
-    with tempfile.NamedTemporaryFile("w+", suffix=".py", delete=False, encoding="utf-8") as tmp:
-        tmp.write(original_code)
-        tmp_path = tmp.name
+def detect_language(file_path):
+    ext = Path(file_path).suffix.lower()
+    return LANG_UPGRADERS.get(ext)
 
-    # Run `modernize` tool in-place on the temp file
-    result = subprocess.run(
-        [sys.executable, "-m", "modernize", "-w", tmp_path],
-        capture_output=True,
-        text=True,
-    )
+def is_python2_file(file_path):
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            for line in f:
+                if "print " in line or "xrange" in line or "raw_input(" in line:
+                    return True
+    except Exception:
+        return False
+    return False
 
-    # Handle failure and clean up
-    if result.returncode != 0:
-        os.remove(tmp_path)
-        raise RuntimeError(f"modernize failed: {result.stderr}")
+def parse_and_upgrade(source_path, dest_path):
+    """
+    Upgrade files in source_path and save them to dest_path.
+    """
+    if not os.path.exists(source_path):
+        raise FileNotFoundError(f"Source path not found: {source_path}")
 
-    # Read back upgraded code from the temp file
-    with open(tmp_path, "r", encoding="utf-8") as f:
-        upgraded_code = f.read()
-
-    os.remove(tmp_path) # Clean up temp file
-    return upgraded_code
-
-#Upgrade an entire Python 2 project to Python 3
-def upgrade_project(original_dir, converted_dir):
-    # Validate input folder exists
-    if not os.path.exists(original_dir):
-        raise FileNotFoundError(f"Original directory not found: {original_dir}")
-
-    # If output folder exists, delete and recreate it
-    if os.path.exists(converted_dir):
-        shutil.rmtree(converted_dir)
-    os.makedirs(converted_dir)
-
-    # Walk through the original project directory
-    for root, _, files in os.walk(original_dir):
-        for file in files:
-            orig_file_path = os.path.join(root, file)
-            relative_path = os.path.relpath(orig_file_path, original_dir)
-            new_file_path = os.path.join(converted_dir, relative_path)
-
-            # Ensure parent directories exist in destination
-            os.makedirs(os.path.dirname(new_file_path), exist_ok=True)
-
-            if file.endswith(".py"):
-                # Try to upgrade Python files
-                try:
-                    upgraded_code = upgrade_single_file(orig_file_path)
-                    with open(new_file_path, "w", encoding="utf-8") as f:
-                        f.write(upgraded_code)
-                    print(f"Upgraded: {relative_path}")
-                except Exception as e:
-                    print(f"Failed to upgrade {orig_file_path}: {e}")
+    # If source_path is a single file
+    if os.path.isfile(source_path):
+        upgrader = detect_language(source_path)
+        os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+        if upgrader:
+            if source_path.endswith(".py") and is_python2_file(source_path):
+                upgrader(source_path, dest_path)
+            elif source_path.endswith(".js"):
+                upgrader(source_path, dest_path)
             else:
-                shutil.copy2(orig_file_path, new_file_path)
-                print(f"Copied (non-Python): {relative_path}")
+                shutil.copy2(source_path, dest_path)
+                print(f"Copied (up-to-date): {source_path}")
+        else:
+            shutil.copy2(source_path, dest_path)
+            print(f"Copied (non-upgradeable): {source_path}")
+        return
 
-#Entry point: Accept folder arguments and trigger upgrade
+    # If source_path is a folder
+    for root, _, files in os.walk(source_path):
+        for file in files:
+            src_file = os.path.join(root, file)
+            rel_path = os.path.relpath(src_file, source_path)
+            dst_file = os.path.join(dest_path, rel_path)
+
+            upgrader = detect_language(src_file)
+            os.makedirs(os.path.dirname(dst_file), exist_ok=True)
+
+            if upgrader:
+                if file.endswith(".py") and is_python2_file(src_file):
+                    upgrader(src_file, dst_file)
+                elif file.endswith(".js"):
+                    upgrader(src_file, dst_file)
+                else:
+                    shutil.copy2(src_file, dst_file)
+                    print(f"Copied (Python3 or up-to-date): {rel_path}")
+            else:
+                shutil.copy2(src_file, dst_file)
+                print(f"Copied (non-upgradeable): {rel_path}")
+
+def main():
+    parser = argparse.ArgumentParser(description="Multi-language project upgrader CLI")
+    subparsers = parser.add_subparsers(dest="command")
+
+    # Upgrade command
+    upgrade_parser = subparsers.add_parser("upgrade", help="Upgrade a project or file")
+    upgrade_parser.add_argument("--src", required=True, help="Source file or folder")
+    upgrade_parser.add_argument("--dst", required=True, help="Destination folder")
+
+    args = parser.parse_args()
+
+    if args.command == "upgrade":
+        src_path = os.path.abspath(args.src)
+        dst_path = os.path.abspath(args.dst)
+        print(f"Upgrading from {src_path} → {dst_path}")
+        parse_and_upgrade(src_path, dst_path)
+    else:
+        parser.print_help()
+
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: python upgrade.py <original_folder> <converted_folder>")
-        sys.exit(1)
-
-    # Resolve absolute paths for clarity and robustness
-    original_path = os.path.abspath(sys.argv[1])
-    converted_path = os.path.abspath(sys.argv[2])
-
-    print("Original Folder:", original_path)
-    print("Converted Folder:", converted_path)
-
-    # Start upgrading project
-    upgrade_project(original_path, converted_path)
+    main()
