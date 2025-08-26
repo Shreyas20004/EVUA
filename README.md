@@ -66,8 +66,9 @@ EVUA/
 2. Create and activate a Python virtual environment:
     ```sh
     python -m venv venv
-    source venv/bin/activate        # On Linux/macOS
-    venv\Scripts\activate           # On Windows
+ Activate the virtual environment:
+- Linux/macOS: `source venv/bin/activate`
+- Windows: `venv\Scripts\activate`
     ```
 3. Install dependencies:
     ```sh
@@ -75,15 +76,16 @@ EVUA/
     ```
 4. Start the FastAPI server (assuming main application file is `app/main.py`):
     ```sh
-    fastapi dev main.py
+   uvicorn app.main:app --reload
     ```
 5. The API will be available at `http://localhost:8000` by default.
 
 ---
 
-## Contributing
+### Contributing
 
-1. create a new branch for your feature or bugfix.
+1. Create a new branch for your feature or bugfix.
 2. Make your changes and commit them with clear messages.
 3. Open a Pull Request describing your changes.
+
 
