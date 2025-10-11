@@ -1,12 +1,37 @@
-# React + Vite
+## Frontend Folder Structure
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This directory contains the source code for the frontend of the EVUA project. Below is an overview of the folder structure and instructions for adding new files.
 
-Currently, two official plugins are available:
+### Folder Structure
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```
+frontend/
+	public/           # Static assets (e.g., images, icons)
+	src/
+		components/     # Reusable React components
+		pages/          # Page-level React components (route targets)
+		services/       # API calls and service logic
+		styles/         # CSS/SCSS files for styling
+		utils/          # Utility/helper functions
+		App.jsx         # Main App component
+		main.jsx        # Entry point
+		...             # Other source files
+	index.html        # Main HTML file
+	package.json      # Project dependencies and scripts
+	vite.config.js    # Vite configuration
+	eslint.config.js  # ESLint configuration
+```
 
-## Expanding the ESLint configuration
+### Adding Files
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **components/**: Add new React components here. Each component should be in its own file (e.g., `MyComponent.jsx`).
+- **pages/**: Add new page components here, typically one per route (e.g., `HomePage.jsx`).
+- **services/**: Add files for API calls or business logic (e.g., `api.js`).
+- **styles/**: Add CSS or SCSS files for styling components or pages.
+- **utils/**: Add utility/helper functions used across the app.
+
+> **Note:**
+> Each folder contains a `placeholder.jsx` file to ensure the folder is tracked by version control. **Remove the placeholder file** when you add your first real file to that folder.
+
+---
+For any questions, refer to the main project README or contact the maintainers.
