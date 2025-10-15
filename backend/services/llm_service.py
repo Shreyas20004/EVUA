@@ -5,8 +5,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 OLLAMA_URL = os.getenv("OLLAMA_API_URL")
-
-def query_ollama(model: str, system_prompt: str, user_input: str, history=None):
+MODEL_NAME = os.getenv("OLLAMA_MODEL_NAME")
+def query_ollama(MODEL_NAME: str, system_prompt: str, user_input: str, history=None):
     if history is None:
         history = []
 
@@ -17,7 +17,7 @@ def query_ollama(model: str, system_prompt: str, user_input: str, history=None):
     full_prompt += f"USER: {user_input}\nASSISTANT:"
 
     payload = {
-        "model": model,
+        "model": MODEL_NAME,
         "prompt": full_prompt,
         "stream": False
     }
