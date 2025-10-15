@@ -1,21 +1,46 @@
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+"use client"
 
+import { Send } from "lucide-react"
 
-export default function AssistantPanel({ selectedFile }) {
-    return (
-        <Card className="bg-zinc-900 border-zinc-800 col-span-1">
-            <CardContent className="p-4">
-                <h3 className="text-lg font-semibold mb-4">Assistant</h3>
-                <div className="text-sm text-zinc-400 mb-3">
-                    Context: <span className="text-white">{selectedFile}</span> • Mode: <span className="text-white">AST</span>
-                </div>
-                <textarea
-                    placeholder="Ask about any change. EVUA can explain AST transforms and AI reasoning for this file."
-                    className="w-full h-32 bg-black/40 text-sm p-2 rounded-md border border-zinc-700 text-white focus:outline-none"
-                ></textarea>
-                <Button className="mt-3 w-full bg-gray-800 hover:bg-gray-700 text-white">Ask</Button>
-            </CardContent>
-        </Card>
-    );
+export default function Assistant() {
+  return (
+    <div className="p-4 h-full flex flex-col">
+      <div className="mb-3">
+        <h2 className="text-evua-foreground text-sm font-medium">Assistant</h2>
+        <p className="text-evua-muted text-xs mt-1">Ask EVUA about upgrade strategy or specific diffs.</p>
+      </div>
+
+      <div className="flex-1 overflow-auto space-y-3 pr-1">
+        <div className="rounded-lg bg-evua-bg/40 border border-border/10 p-3">
+          <p className="text-xs text-evua-foreground">
+            Hello! I’ll help you upgrade Python 2 code to Python 3 using a hybrid AST + LLM approach.
+          </p>
+        </div>
+        <div className="rounded-lg bg-evua-bg/40 border border-border/10 p-3">
+          <p className="text-xs text-evua-foreground">
+            I detected print statements and xrange usage. I proposed safe, modern replacements.
+          </p>
+        </div>
+        <div className="rounded-lg bg-evua-bg/40 border border-border/10 p-3">
+          <p className="text-xs text-evua-foreground">
+            Let me know if you want stricter type hints or automated test updates next.
+          </p>
+        </div>
+      </div>
+
+      <form onSubmit={(e) => e.preventDefault()} className="mt-3 flex items-center gap-2" aria-label="Assistant input">
+        <input
+          className="flex-1 rounded-lg bg-evua-bg/60 border border-border/20 px-3 py-2 text-sm text-evua-foreground placeholder:text-evua-muted focus:outline-none focus:ring-2 focus:ring-evua-accent/40"
+          placeholder="Type your message..."
+        />
+        <button
+          type="submit"
+          className="inline-flex items-center gap-2 rounded-lg px-3 py-2 bg-evua-accent text-evua-on-accent text-xs font-medium hover:opacity-95 transition"
+        >
+          <Send className="size-4" />
+          Send
+        </button>
+      </form>
+    </div>
+  )
 }

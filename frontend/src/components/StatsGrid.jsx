@@ -1,36 +1,11 @@
-import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-
-export default function StatsGrid() {
+export default function StatsCard({ label, value, hint }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
-      {/* Total Files Scanned */}
-      <Card className="bg-[#0b0b0b] text-white border border-zinc-800 rounded-xl shadow-inner">
-        <CardContent className="p-6">
-          <p className="text-zinc-400 text-base mb-3">Total Files Scanned</p>
-          <h2 className="text-4xl font-bold tracking-wide mt-3">384</h2>
-        </CardContent>
-      </Card>
-
-      {/* Deprecated Syntax Fixed */}
-      <Card className="bg-[#0b0b0b] text-white border border-zinc-800 rounded-xl shadow-inner">
-        <CardContent className="p-6">
-          <p className="text-zinc-400 text-base mb-3">Deprecated Syntax Fixed</p>
-          <h2 className="text-4xl font-bold tracking-wide mt-3">1,276</h2>
-        </CardContent>
-      </Card>
-
-      {/* Overall Upgrade Progress */}
-      <Card className="bg-[#0b0b0b] text-white border border-zinc-800 rounded-xl shadow-inner">
-        <CardContent className="p-6">
-          <p className="text-zinc-400 text-base mb-3">Overall Upgrade Progress</p>
-          <h2 className="text-4xl font-bold tracking-wide mt-3">44%</h2>
-          <Progress
-            value={44}
-            className="mt-4 bg-zinc-800"
-          />
-        </CardContent>
-      </Card>
+    <div className="bg-evua-panel rounded-xl border border-border/20 shadow-lg p-4">
+      <div className="flex items-center justify-between">
+        <p className="text-evua-muted text-sm">{label}</p>
+      </div>
+      <p className="text-evua-foreground text-2xl font-semibold mt-1">{value}</p>
+      {hint ? <p className="text-evua-muted text-xs mt-2">{hint}</p> : null}
     </div>
-  );
+  )
 }
