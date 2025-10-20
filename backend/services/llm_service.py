@@ -4,7 +4,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-OLLAMA_URL = os.getenv("OLLAMA_API_URL")
+OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+OLLAMA_URL = f"{OLLAMA_HOST}/api/generate"
 MODEL_NAME = os.getenv("OLLAMA_MODEL_NAME")
 def query_ollama(MODEL_NAME: str, system_prompt: str, user_input: str, history=None):
     if history is None:

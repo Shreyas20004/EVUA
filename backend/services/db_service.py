@@ -6,8 +6,12 @@ import os
 
 load_dotenv()
 
-client = MongoClient(os.getenv("MONGO_URI"))
-db = client[os.getenv("DB_NAME")]
+# Get environment variables with fallback values
+mongo_uri = os.getenv("MONGO_URI", "mongodb://localhost:27017")
+db_name = os.getenv("DB_NAME", "evua_db")
+
+client = MongoClient(mongo_uri)
+db = client[db_name]
 
 def save_message(session_id: str, role: str, content: str):
     db.history.update_one(
