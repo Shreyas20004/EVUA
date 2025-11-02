@@ -1,0 +1,102 @@
+[
+  {
+    "pattern": "print (.+)",
+    "replacement": "print(\\1)",
+    "condition": "py2_syntax"
+  },
+  {
+    "pattern": "\\bxrange\\b",
+    "replacement": "range",
+    "condition": "py2_syntax"
+  },
+  {
+    "pattern": "\\biteritems\\b",
+    "replacement": "items",
+    "condition": "dict_api"
+  },
+  {
+    "pattern": "\\biterkeys\\b",
+    "replacement": "keys",
+    "condition": "dict_api"
+  },
+  {
+    "pattern": "\\bitervalues\\b",
+    "replacement": "values",
+    "condition": "dict_api"
+  },
+  {
+    "pattern": "\\braw_input\\b",
+    "replacement": "input",
+    "condition": "py2_syntax"
+  },
+  {
+    "pattern": "\\blong\\b",
+    "replacement": "int",
+    "condition": "numeric_type"
+  },
+  {
+    "pattern": "([^\\s]+)\\.has_key\\(([^\\)]+)\\)",
+    "replacement": "\\2 in \\1",
+    "condition": "dict_api"
+  },
+  {
+    "pattern": "\\bmap\\(([^,]+),\\s*([^\\)]+)\\)",
+    "replacement": "list(map(\\1, \\2))",
+    "condition": "iterator_fix"
+  },
+  {
+    "pattern": "from __future__ import division",
+    "replacement": "",
+    "condition": "future_division_already"
+  },
+  {
+    "pattern": "([0-9]+)L",
+    "replacement": "\\1",
+    "condition": "numeric_type"
+  },
+  {
+    "pattern": "\\bunicode\\b",
+    "replacement": "str",
+    "condition": "string_type"
+  },
+  {
+    "pattern": "\\bbasestring\\b",
+    "replacement": "str",
+    "condition": "string_type"
+  },
+  {
+    "pattern": "\\bapply\\(([^,]+),\\s*([^\\)]+)\\)",
+    "replacement": "\\1(*\\2)",
+    "condition": "function_call"
+  },
+  {
+    "pattern": "\\bexecfile\\(([^\\)]+)\\)",
+    "replacement": "exec(open(\\1).read())",
+    "condition": "py2_exec"
+  },
+  {
+    "pattern": "\\bnext\\(([^,]+)\\)",
+    "replacement": "next(\\1)",
+    "condition": "compat_next"
+  },
+  {
+    "pattern": "\\bException,\\s*([^:]+):",
+    "replacement": "Exception as \\1:",
+    "condition": "exception_syntax"
+  },
+  {
+    "pattern": "\\b<>\\b",
+    "replacement": "!=",
+    "condition": "comparison"
+  },
+  {
+    "pattern": "\\bisinstance\\(([^,]+),\\s*unicode\\)",
+    "replacement": "isinstance(\\1, str)",
+    "condition": "string_type"
+  },
+  {
+    "pattern": "\\bfilter\\(([^,]+),\\s*([^\\)]+)\\)",
+    "replacement": "list(filter(\\1, \\2))",
+    "condition": "iterator_fix"
+  }
+]
